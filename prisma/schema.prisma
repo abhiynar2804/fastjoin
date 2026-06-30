@@ -10,5 +10,127 @@ generator client {
 
 datasource db {
   provider = "postgresql"
-  url = env("DATABASE_URL")
+  url      = env("DATABASE_URL")
+}
+
+enum Role {
+  STUDENT
+  RECRUITER
+  ADMIN
+}
+
+enum JobType {
+  INTERNSHIP
+  FULL_TIME
+}
+
+enum WorkMode {
+  REMOTE
+  HYBRID
+  ONSITE
+}
+
+enum JobStatus {
+  OPEN
+  CLOSED
+}
+
+enum ApplicationStatus {
+  APPLIED
+  UNDER_REVIEW
+  SHORTLISTED
+  REJECTED
+  SELECTED
+}
+
+model User {
+  id           String   @id @default(uuid())
+  publicId     String   @unique
+  name         String
+  email        String   @unique
+  password     String
+  role         Role
+  phone        String?
+  profileImage String?
+  isActive     Boolean  @default(true)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  resume       Resume?
+  jobs         Job[]
+  applications Application[]
+  savedJobs    SavedJob[]
+}
+
+model Company {
+  id          String   @id @default(uuid())
+  name        String
+  description String
+  website     String?
+  logo        String?
+  industry    String
+  location    String
+  createdAt   DateTime @default(now())
+
+  jobs Job[]
+}
+
+model Job {
+  id           String    @id @default(uuid())
+  title        String
+  description  String
+  location     String
+  jobType      JobType
+  workMode     WorkMode
+  compensation String
+  openings     Int
+  deadline     DateTime
+  status       JobStatus @default(OPEN)
+  createdAt    DateTime  @default(now())
+
+  recruiterId String
+  recruiter   User   @relation(fields: [recruiterId], references: [id])
+
+  companyId String
+  company   Company @relation(fields: [companyId], references: [id])
+
+  savedJobs    SavedJob[]
+  applications Application[]
+}
+
+model Application {
+  id        String            @id @default(uuid())
+  status    ApplicationStatus @default(APPLIED)
+  appliedAt DateTime          @default(now())
+
+  studentId String
+  student   User   @relation(fields: [studentId], references: [id])
+
+  jobId String
+  job   Job    @relation(fields: [jobId], references: [id])
+
+  @@unique([studentId, jobId])
+}
+
+model Resume {
+  id         String   @id @default(uuid())
+  resumeUrl  String
+  fileName   String
+  uploadedAt DateTime @default(now())
+
+  studentId String @unique
+  student   User   @relation(fields: [studentId], references: [id])
+}
+
+model SavedJob {
+  id      String   @id @default(uuid())
+  savedAt DateTime @default(now())
+
+  studentId String
+  student   User   @relation(fields: [studentId], references: [id])
+
+  jobId String
+  job   Job    @relation(fields: [jobId], references: [id])
+
+  @@unique([studentId, jobId])
 }
