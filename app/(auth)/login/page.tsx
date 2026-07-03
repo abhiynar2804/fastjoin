@@ -17,10 +17,25 @@ export default function LoginPage() {
     });
 
     if (result?.error) {
-      alert("Invalid email or password");
-    } else {
-      window.location.href = "/student/dashboard";
-    }
+  alert("Invalid email or password");
+  return;
+}
+
+const response = await fetch("/api/auth/session");
+const session = await response.json();
+
+switch (session?.user?.role) {
+  case "ADMIN":
+    window.location.href = "/admin/dashboard";
+    break;
+
+  case "RECRUITER":
+    window.location.href = "/recruiter/dashboard";
+    break;
+
+  default:
+    window.location.href = "/student/dashboard";
+}
   }
 
   return (
