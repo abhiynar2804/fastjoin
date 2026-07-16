@@ -70,40 +70,28 @@ model User {
   skills       String?
 }
 
-model Company {
-  id          String   @id @default(uuid())
-  name        String
-  description String
-  website     String?
-  logo        String?
-  industry    String
-  location    String
-  createdAt   DateTime @default(now())
-
-  jobs Job[]
-}
-
 model Job {
-  id           String    @id @default(uuid())
+  id           String   @id @default(uuid())
   title        String
-  description  String
+  company      String
   location     String
+  salary       String
+  description  String
+  requirements String
+
   jobType      JobType
   workMode     WorkMode
-  compensation String
-  openings     Int
+
   deadline     DateTime
   status       JobStatus @default(OPEN)
-  createdAt    DateTime  @default(now())
 
-  recruiterId String
-  recruiter   User   @relation(fields: [recruiterId], references: [id])
+  recruiterId  String
+  recruiter    User @relation(fields: [recruiterId], references: [id])
 
-  companyId String
-  company   Company @relation(fields: [companyId], references: [id])
+  createdAt    DateTime @default(now())
 
-  savedJobs    SavedJob[]
   applications Application[]
+  savedJobs    SavedJob[]
 }
 
 model Application {
