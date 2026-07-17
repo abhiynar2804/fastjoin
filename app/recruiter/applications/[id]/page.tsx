@@ -71,7 +71,7 @@ export default async function ApplicantDetailsPage({
 
   {application.student.resume ? (
     <a
-      href={application.student.resume.resumeUrl}
+      href={`/api/resume/${application.student.id}`}
       target="_blank"
       rel="noopener noreferrer"
       className="mt-2 inline-block rounded-lg bg-blue-600 px-4 py-2 text-white"

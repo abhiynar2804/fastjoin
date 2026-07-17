@@ -1,14 +1,9 @@
-import { auth } from "@/auth";
-import { redirect } from "next/navigation";
+import { requireStudent } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import ResumeUpload from "@/components/student/resume/ResumeUpload";
 
 export default async function ResumePage() {
-  const session = await auth();
-
-  if (!session?.user?.id) {
-    redirect("/login");
-  }
+  const session = await requireStudent();
 
   const resume = await prisma.resume.findUnique({
     where: {
@@ -29,11 +24,11 @@ export default async function ResumePage() {
           <p><strong>File:</strong> {resume.fileName}</p>
 
           <a
-            href={resume.resumeUrl}
+            href={`/api/resume/${session.user.id}`}
             target="_blank"
             className="text-blue-600"
           >
-            Download Resume
+            View Resume
           </a>
         </div>
       ) : (
