@@ -1,8 +1,24 @@
 import SearchBar from "@/components/student/jobs/SearchBar";
 import JobFilters from "@/components/student/jobs/JobFilters";
 import JobList from "@/components/student/jobs/JobList";
+import { prisma } from "@/lib/prisma";
+import { requireStudent } from "@/lib/auth";
 
-export default function JobsPage() {
+export default async function JobsPage() {
+  await requireStudent();
+
+  const jobs = await prisma.job.findMany({
+    where: {
+      status: "OPEN",
+      deadline: {
+        gte: new Date(),
+      },
+    },
+    orderBy: {
+      createdAt: "desc",
+    },
+  });
+
   return (
     <div>
       <h1 className="mb-6 text-3xl font-bold">
@@ -15,7 +31,7 @@ export default function JobsPage() {
         <JobFilters />
 
         <div className="lg:col-span-3">
-          <JobList />
+          <JobList jobs={jobs} />
         </div>
       </div>
     </div>
