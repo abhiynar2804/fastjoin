@@ -7,9 +7,12 @@ export default function SignupPage() {
     name: "",
     email: "",
     password: "",
+    role: "STUDENT",
   });
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
+  ) => {
     setFormData({
       ...formData,
       [e.target.name]: e.target.value,
@@ -37,11 +40,7 @@ export default function SignupPage() {
       <h1>Signup</h1>
 
       <form onSubmit={handleSubmit}>
-        <input
-          name="name"
-          placeholder="Name"
-          onChange={handleChange}
-        />
+        <input name="name" placeholder="Name" onChange={handleChange} />
 
         <input
           name="email"
@@ -57,9 +56,12 @@ export default function SignupPage() {
           onChange={handleChange}
         />
 
-        <button type="submit">
-          Register
-        </button>
+        <select name="role" value={formData.role} onChange={handleChange}>
+          <option value="STUDENT">Student</option>
+          <option value="RECRUITER">Recruiter</option>
+        </select>
+
+        <button type="submit">Register</button>
       </form>
     </div>
   );
