@@ -2,20 +2,26 @@ import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import bcrypt from "bcrypt";
 import { Role } from "@prisma/client";
+import { registerSchema } from "@/lib/validations/user";
 
 export async function POST(request: Request) {
   try {
     const body = await request.json();
 
-    const { name, email, password } = body;
+    const result = registerSchema.safeParse(body);
 
-    // 1. Check required fields
-    if (!name || !email || !password) {
+    if (!result.success) {
       return NextResponse.json(
-        { message: "All fields are required" },
-        { status: 400 }
+        {
+          error: result.error.flatten(),
+        },
+        {
+          status: 400,
+        }
       );
     }
+
+    const { name, email, password } = result.data;
 
     // 2. Check existing user
     const existingUser = await prisma.user.findUnique({
@@ -33,22 +39,22 @@ export async function POST(request: Request) {
     const hashedPassword = await bcrypt.hash(password, 10);
 
     const user = await prisma.user.create({
-  data: {
-    publicId: `02-FJ-${Date.now()}`,
-    name,
-    email,
-    password: hashedPassword,
-    role: Role.STUDENT,
-  },
-});
+      data: {
+        publicId: `02-FJ-${Date.now()}`,
+        name,
+        email,
+        password: hashedPassword,
+        role: Role.STUDENT,
+      },
+    });
 
-return NextResponse.json(
-  {
-    message: "User created successfully",
-    user,
-  },
-  { status: 201 }
-);
+    return NextResponse.json(
+      {
+        message: "User created successfully",
+        user,
+      },
+      { status: 201 }
+    );
   } catch {
     return NextResponse.json(
       { message: "Something went wrong" },

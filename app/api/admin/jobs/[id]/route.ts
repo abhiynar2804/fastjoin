@@ -1,7 +1,8 @@
 import { NextResponse } from "next/server";
 
-import { auth } from "@/auth";
+import { requireAdmin } from "@/lib/auth-helpers";
 import { prisma } from "@/lib/prisma";
+import { success, error } from "@/lib/api-response";
 
 export async function DELETE(
   req: Request,
@@ -12,14 +13,9 @@ export async function DELETE(
   }
 ) {
   try {
-    const session = await auth();
+    const { session, error } = await requireAdmin();
 
-    if (!session || session.user.role !== "ADMIN") {
-      return NextResponse.json(
-        { error: "Unauthorized" },
-        { status: 401 }
-      );
-    }
+    if (error) return error;
 
     const { id } = await params;
 
@@ -29,15 +25,12 @@ export async function DELETE(
       },
     });
 
-    return NextResponse.json({
+    return success({
       message: "Job deleted successfully.",
     });
   } catch (error) {
     console.error(error);
 
-    return NextResponse.json(
-      { error: "Something went wrong." },
-      { status: 500 }
-    );
+    return error("Something went wrong.", 500);
   }
 }

@@ -1,26 +1,32 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
-import { auth } from "@/auth";
+import { jobSchema } from "@/lib/validations/job";
+import { requireRecruiter } from "@/lib/auth-helpers";
+import { success, error } from "@/lib/api-response";
 
 export async function POST(req: Request) {
   try {
-   const session = await auth();
+    const { session, error } = await requireRecruiter();
 
-if (!session?.user) {
-  return NextResponse.json(
-    { error: "Unauthorized" },
-    { status: 401 }
-  );
-}
-
-if (session.user.role !== "RECRUITER") {
-  return NextResponse.json(
-    { error: "Forbidden: Recruiter access only" },
-    { status: 403 }
-  );
-}
+    if (error) return error;
 
     const body = await req.json();
+
+    const result = jobSchema.safeParse({
+      ...body,
+      salary: Number(body.salary),
+    });
+
+    if (!result.success) {
+      return NextResponse.json(
+        {
+          error: result.error.flatten(),
+        },
+        {
+          status: 400,
+        }
+      );
+    }
 
     const {
       title,
@@ -32,48 +38,28 @@ if (session.user.role !== "RECRUITER") {
       jobType,
       workMode,
       deadline,
-    } = body;
-
-    if (
-      !title ||
-      !company ||
-      !location ||
-      !salary ||
-      !description ||
-      !requirements ||
-      !jobType ||
-      !workMode ||
-      !deadline
-    ) {
-      return NextResponse.json(
-        { error: "All fields are required" },
-        { status: 400 }
-      );
-    }
+    } = result.data;
 
     const job = await prisma.job.create({
-  data: {
-    title,
-    company,
-    location,
-    salary,
-    description,
-    requirements,
-    jobType,
-    workMode,
-    deadline: new Date(deadline),
-    recruiterId: session.user.id,
-  },
-});
+      data: {
+        title,
+        company,
+        location,
+        salary,
+        description,
+        requirements,
+        jobType,
+        workMode,
+        deadline,
+        recruiterId: session.user.id,
+      },
+    });
 
-    return NextResponse.json(job, { status: 201 });
+    return success(job, 201);
   } catch (error) {
     console.error(error);
 
-    return NextResponse.json(
-      { error: "Failed to create job" },
-      { status: 500 }
-    );
+    return error("Failed to create job", 500);
   }
 }
 
@@ -96,13 +82,10 @@ export async function GET() {
       },
     });
 
-    return NextResponse.json(jobs);
+    return success(jobs);
   } catch (error) {
     console.error(error);
 
-    return NextResponse.json(
-      { error: "Failed to fetch jobs" },
-      { status: 500 }
-    );
+    return error("Failed to fetch jobs", 500);
   }
 }

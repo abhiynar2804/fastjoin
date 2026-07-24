@@ -1,35 +1,19 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
-import { auth } from "@/auth";
+import { requireStudent } from "@/lib/auth-helpers";
+import { success, error } from "@/lib/api-response";
 
 export async function POST(req: Request) {
   try {
-    const session = await auth();
+    const { session, error } = await requireStudent();
 
-    // Check authentication
-    if (!session?.user?.id) {
-      return NextResponse.json(
-        { error: "Unauthorized" },
-        { status: 401 }
-      );
-    }
-
-    // Only students can apply
-    if (session.user.role !== "STUDENT") {
-      return NextResponse.json(
-        { error: "Forbidden: Student access only" },
-        { status: 403 }
-      );
-    }
+    if (error) return error;
 
     const body = await req.json();
     const { jobId } = body;
 
     if (!jobId) {
-      return NextResponse.json(
-        { error: "Job ID is required" },
-        { status: 400 }
-      );
+      return error("Job ID is required", 400);
     }
 
     // Check if job exists
@@ -40,39 +24,26 @@ export async function POST(req: Request) {
     });
 
     if (!job) {
-      return NextResponse.json(
-        { error: "Job not found" },
-        { status: 404 }
-      );
+      return error("Job not found", 404);
     }
 
     // Don't allow applications to closed or expired jobs
-    if (
-      job.status !== "OPEN" ||
-      job.deadline < new Date()
-    ) {
-      return NextResponse.json(
-        { error: "This job is no longer accepting applications" },
-        { status: 400 }
-      );
+    if (job.status !== "OPEN" || job.deadline < new Date()) {
+      return error("This job is no longer accepting applications", 400);
     }
 
     // Check if student already applied
-    const existingApplication =
-      await prisma.application.findUnique({
-        where: {
-          studentId_jobId: {
-            studentId: session.user.id,
-            jobId,
-          },
+    const existingApplication = await prisma.application.findUnique({
+      where: {
+        studentId_jobId: {
+          studentId: session.user.id,
+          jobId,
         },
-      });
+      },
+    });
 
     if (existingApplication) {
-      return NextResponse.json(
-        { error: "You have already applied for this job" },
-        { status: 409 }
-      );
+      return error("You have already applied for this job", 409);
     }
 
     // Create application
@@ -83,7 +54,7 @@ export async function POST(req: Request) {
       },
     });
 
-    return NextResponse.json(
+    return success(
       {
         message: "Application submitted successfully",
         application,
@@ -93,9 +64,6 @@ export async function POST(req: Request) {
   } catch (error) {
     console.error("Apply job error:", error);
 
-    return NextResponse.json(
-      { error: "Failed to submit application" },
-      { status: 500 }
-    );
+    return error("Failed to submit application", 500);
   }
 }

@@ -1,7 +1,8 @@
 import { NextResponse } from "next/server";
 
-import { auth } from "@/auth";
+import { requireAdmin } from "@/lib/auth-helpers";
 import { prisma } from "@/lib/prisma";
+import { success, error } from "@/lib/api-response";
 
 export async function PATCH(
   req: Request,
@@ -12,14 +13,9 @@ export async function PATCH(
   }
 ) {
   try {
-    const session = await auth();
+    const { session, error } = await requireAdmin();
 
-    if (!session || session.user.role !== "ADMIN") {
-      return NextResponse.json(
-        { error: "Unauthorized" },
-        { status: 401 }
-      );
-    }
+    if (error) return error;
 
     const { id } = await params;
 
@@ -34,13 +30,11 @@ export async function PATCH(
       },
     });
 
-    return NextResponse.json(job);
+    return success(job);
   } catch (error) {
     console.error(error);
 
-    return NextResponse.json(
-      { error: "Something went wrong." },
+    return error("Something went wrong.", 500);
       { status: 500 }
-    );
   }
 }

@@ -1,35 +1,19 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
-import { auth } from "@/auth";
+import { requireStudent } from "@/lib/auth-helpers";
+import { success, error } from "@/lib/api-response";
 
 export async function POST(req: Request) {
   try {
-    const session = await auth();
+    const { session, error } = await requireStudent();
 
-    // User must be logged in
-    if (!session?.user?.id) {
-      return NextResponse.json(
-        { error: "Unauthorized" },
-        { status: 401 }
-      );
-    }
-
-    // Only students can save jobs
-    if (session.user.role !== "STUDENT") {
-      return NextResponse.json(
-        { error: "Forbidden: Student access only" },
-        { status: 403 }
-      );
-    }
+    if (error) return error;
 
     const body = await req.json();
     const { jobId } = body;
 
     if (!jobId) {
-      return NextResponse.json(
-        { error: "Job ID is required" },
-        { status: 400 }
-      );
+      return error("Job ID is required", 400);
     }
 
     // Check if job exists
@@ -40,10 +24,7 @@ export async function POST(req: Request) {
     });
 
     if (!job) {
-      return NextResponse.json(
-        { error: "Job not found" },
-        { status: 404 }
-      );
+      return error("Job not found", 404);
     }
 
     // Check if already saved
@@ -57,10 +38,7 @@ export async function POST(req: Request) {
     });
 
     if (existingSavedJob) {
-      return NextResponse.json(
-        { error: "Job already saved" },
-        { status: 409 }
-      );
+      return error("Job already saved", 409);
     }
 
     // Save job
@@ -71,7 +49,7 @@ export async function POST(req: Request) {
       },
     });
 
-    return NextResponse.json(
+    return success(
       {
         message: "Job saved successfully",
         savedJob,
@@ -81,9 +59,6 @@ export async function POST(req: Request) {
   } catch (error) {
     console.error("Save job error:", error);
 
-    return NextResponse.json(
-      { error: "Failed to save job" },
-      { status: 500 }
-    );
+    return error("Failed to save job", 500);
   }
 }

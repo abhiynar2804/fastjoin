@@ -1,0 +1,23 @@
+export const PAGINATION = {
+  DEFAULT_PAGE: 1,
+  DEFAULT_LIMIT: 10,
+};
+
+export const USER_ROLES = {
+  STUDENT: "STUDENT",
+  RECRUITER: "RECRUITER",
+  ADMIN: "ADMIN",
+} as const;
+
+export const JOB_STATUS = {
+  OPEN: "OPEN",
+  CLOSED: "CLOSED",
+} as const;
+
+export const APPLICATION_STATUS = {
+  APPLIED: "APPLIED",
+  UNDER_REVIEW: "UNDER_REVIEW",
+  SHORTLISTED: "SHORTLISTED",
+  REJECTED: "REJECTED",
+  SELECTED: "SELECTED",
+} as const;
