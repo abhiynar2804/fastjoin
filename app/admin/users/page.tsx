@@ -24,73 +24,49 @@ export default async function AdminUsersPage({
     redirect("/");
   }
 
-  const { search = "", role = "ALL", page = "1" } = await searchParams;
+  const { search = "", role = "ALL", page = "1" } =
+    await searchParams;
 
   const currentPage = Number(page);
   const pageSize = 10;
 
-  const totalUsers = await prisma.user.count({
-    where: {
-      ...(search && {
-        OR: [
-          {
-            name: {
-              contains: search,
-              mode: "insensitive",
-            },
+  const where: any = {
+    ...(search && {
+      OR: [
+        {
+          name: {
+            contains: search,
+            mode: "insensitive",
           },
-          {
-            email: {
-              contains: search,
-              mode: "insensitive",
-            },
+        },
+        {
+          email: {
+            contains: search,
+            mode: "insensitive",
           },
-          {
-            publicId: {
-              contains: search,
-              mode: "insensitive",
-            },
+        },
+        {
+          publicId: {
+            contains: search,
+            mode: "insensitive",
           },
-        ],
-      }),
+        },
+      ],
+    }),
 
-      ...(role !== "ALL" && {
-        role,
-      }),
-    },
+    ...(role !== "ALL" && {
+      role: role as any,
+    }),
+  };
+
+  const totalUsers = await prisma.user.count({
+    where,
   });
 
   const totalPages = Math.ceil(totalUsers / pageSize);
 
   const users = await prisma.user.findMany({
-    where: {
-      ...(search && {
-        OR: [
-          {
-            name: {
-              contains: search,
-              mode: "insensitive",
-            },
-          },
-          {
-            email: {
-              contains: search,
-              mode: "insensitive",
-            },
-          },
-          {
-            publicId: {
-              contains: search,
-              mode: "insensitive",
-            },
-          },
-        ],
-      }),
-
-      ...(role !== "ALL" && {
-        role,
-      }),
-    },
+    where,
 
     skip: (currentPage - 1) * pageSize,
     take: pageSize,
@@ -114,7 +90,9 @@ export default async function AdminUsersPage({
       <div className="mb-8">
         <h1 className="text-3xl font-bold">User Management</h1>
 
-        <p className="text-gray-500">Manage students, recruiters and admins.</p>
+        <p className="text-gray-500">
+          Manage students, recruiters and admins.
+        </p>
       </div>
 
       <form className="mb-6 flex flex-col gap-4 md:flex-row" method="GET">

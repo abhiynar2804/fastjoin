@@ -13,9 +13,9 @@ export async function DELETE(
   }
 ) {
   try {
-    const { session, error } = await requireAdmin();
+    const { session, error: authError } = await requireAdmin();
 
-    if (error) return error;
+    if (authError) return authError;
 
     const { id } = await params;
 
@@ -28,8 +28,8 @@ export async function DELETE(
     return success({
       message: "Job deleted successfully.",
     });
-  } catch (error) {
-    console.error(error);
+  } catch (err) {
+    console.error(err);
 
     return error("Something went wrong.", 500);
   }

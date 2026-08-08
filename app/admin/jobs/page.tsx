@@ -37,36 +37,23 @@ export default async function AdminJobsPage({
   const currentPage = Number(page);
   const pageSize = 10;
 
-  const where = {
-    ...(search && {
-      OR: [
-        {
-          title: {
-            contains: search,
-            mode: "insensitive" as const,
-          },
+  const where: any = {
+  ...(search && {
+    OR: [
+      { title: { contains: search, mode: "insensitive" } },
+      { company: { contains: search, mode: "insensitive" } },
+      {
+        recruiter: {
+          name: { contains: search, mode: "insensitive" },
         },
-        {
-          company: {
-            contains: search,
-            mode: "insensitive" as const,
-          },
-        },
-        {
-          recruiter: {
-            name: {
-              contains: search,
-              mode: "insensitive" as const,
-            },
-          },
-        },
-      ],
-    }),
+      },
+    ],
+  }),
 
-    ...(status !== "ALL" && { status }),
-    ...(jobType !== "ALL" && { jobType }),
-    ...(workMode !== "ALL" && { workMode }),
-  };
+  ...(status !== "ALL" && { status: status as any }),
+  ...(jobType !== "ALL" && { jobType: jobType as any }),
+  ...(workMode !== "ALL" && { workMode: workMode as any }),
+};
 
   const totalJobs = await prisma.job.count({
     where,

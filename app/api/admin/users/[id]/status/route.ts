@@ -13,9 +13,9 @@ export async function PATCH(
   }
 ) {
   try {
-    const { session, error } = await requireAdmin();
+    const { session, error: authError } = await requireAdmin();
 
-    if (error) return error;
+    if (authError) return authError;
 
     const { id } = await params;
 
@@ -33,8 +33,8 @@ export async function PATCH(
     });
 
     return success(user);
-  } catch (error) {
-    console.error(error);
+  } catch (err) {
+    console.error(err);
 
     return error("Something went wrong.", 500);
   }

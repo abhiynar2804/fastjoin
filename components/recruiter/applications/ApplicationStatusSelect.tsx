@@ -24,18 +24,15 @@ export default function ApplicationStatusSelect({
     setLoading(true);
 
     try {
-      const res = await fetch(
-        `/api/applications/${applicationId}`,
-        {
-          method: "PATCH",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            status: newStatus,
-          }),
-        }
-      );
+      const res = await fetch(`/api/applications/${applicationId}`, {
+        method: "PATCH",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          status: newStatus,
+        }),
+      });
 
       const data = await res.json();
 
@@ -46,8 +43,8 @@ export default function ApplicationStatusSelect({
       }
 
       alert("Application status updated successfully!");
-    } catch (error) {
-      console.error(error);
+    } catch (err) {
+      console.error(err);
 
       setStatus(previousStatus);
       alert("Something went wrong");

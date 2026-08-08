@@ -22,10 +22,7 @@ export async function PATCH(req: Request, { params }: Props) {
 
     // Check authentication
     if (!session?.user?.id) {
-      return NextResponse.json(
-        { error: "Unauthorized" },
-        { status: 401 }
-      );
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
     // Only recruiters can update application status
@@ -87,8 +84,8 @@ export async function PATCH(req: Request, { params }: Props) {
       message: "Application status updated successfully",
       application: updatedApplication,
     });
-  } catch (error) {
-    console.error("Update application status error:", error);
+  } catch (err) {
+    console.error("Update application status error:", err);
 
     return NextResponse.json(
       { error: "Failed to update application status" },

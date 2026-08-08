@@ -9,26 +9,19 @@ type Props = {
   }>;
 };
 
-export async function GET(
-  req: Request,
-  { params }: Props
-) {
+export async function GET(req: Request, { params }: Props) {
   try {
     const session = await auth();
 
     if (!session?.user?.id) {
-      return NextResponse.json(
-        { error: "Unauthorized" },
-        { status: 401 }
-      );
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
     const { studentId } = await params;
 
     // Student can access their own resume
     const isOwnResume =
-      session.user.role === "STUDENT" &&
-      session.user.id === studentId;
+      session.user.role === "STUDENT" && session.user.id === studentId;
 
     // Recruiter can access resume only if the student
     // applied to one of the recruiter's jobs
@@ -48,10 +41,7 @@ export async function GET(
     }
 
     if (!isOwnResume && !recruiterHasAccess) {
-      return NextResponse.json(
-        { error: "Forbidden" },
-        { status: 403 }
-      );
+      return NextResponse.json({ error: "Forbidden" }, { status: 403 });
     }
 
     const resume = await prisma.resume.findUnique({
@@ -61,10 +51,7 @@ export async function GET(
     });
 
     if (!resume) {
-      return NextResponse.json(
-        { error: "Resume not found" },
-        { status: 404 }
-      );
+      return NextResponse.json({ error: "Resume not found" }, { status: 404 });
     }
 
     const result = await get(resume.resumeUrl, {
@@ -80,14 +67,13 @@ export async function GET(
 
     return new Response(result.stream, {
       headers: {
-        "Content-Type":
-          result.blob.contentType || "application/pdf",
+        "Content-Type": result.blob.contentType || "application/pdf",
 
         "Content-Disposition": `inline; filename="${resume.fileName}"`,
       },
     });
-  } catch (error) {
-    console.error("Resume access error:", error);
+  } catch (err) {
+    console.error("Resume access error:", err);
 
     return NextResponse.json(
       { error: "Failed to access resume" },

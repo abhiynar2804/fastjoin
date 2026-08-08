@@ -6,9 +6,9 @@ import { success, error } from "@/lib/api-response";
 
 export async function POST(req: Request) {
   try {
-    const { session, error } = await requireRecruiter();
+    const { session, error: authError } = await requireRecruiter();
 
-    if (error) return error;
+    if (authError) return authError;
 
     const body = await req.json();
 
@@ -45,7 +45,7 @@ export async function POST(req: Request) {
         title,
         company,
         location,
-        salary,
+        salary: String(salary),
         description,
         requirements,
         jobType,
@@ -56,8 +56,8 @@ export async function POST(req: Request) {
     });
 
     return success(job, 201);
-  } catch (error) {
-    console.error(error);
+  } catch (err) {
+    console.error(err);
 
     return error("Failed to create job", 500);
   }
@@ -83,8 +83,8 @@ export async function GET() {
     });
 
     return success(jobs);
-  } catch (error) {
-    console.error(error);
+  } catch (err) {
+    console.error(err);
 
     return error("Failed to fetch jobs", 500);
   }

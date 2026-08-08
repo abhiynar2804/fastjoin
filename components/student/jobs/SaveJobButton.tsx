@@ -7,10 +7,7 @@ type Props = {
   initialSaved: boolean;
 };
 
-export default function SaveJobButton({
-  jobId,
-  initialSaved,
-}: Props) {
+export default function SaveJobButton({ jobId, initialSaved }: Props) {
   const [loading, setLoading] = useState(false);
   const [saved, setSaved] = useState(initialSaved);
 
@@ -34,8 +31,8 @@ export default function SaveJobButton({
       } else {
         alert(data.error || "Failed to save job");
       }
-    } catch (error) {
-      console.error(error);
+    } catch (err) {
+      console.error(err);
       alert("Something went wrong");
     } finally {
       setLoading(false);

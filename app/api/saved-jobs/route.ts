@@ -5,9 +5,9 @@ import { success, error } from "@/lib/api-response";
 
 export async function POST(req: Request) {
   try {
-    const { session, error } = await requireStudent();
+    const { session, error: authError } = await requireStudent();
 
-    if (error) return error;
+    if (authError) return authError;
 
     const body = await req.json();
     const { jobId } = body;
@@ -54,10 +54,10 @@ export async function POST(req: Request) {
         message: "Job saved successfully",
         savedJob,
       },
-      { status: 201 }
+      201
     );
-  } catch (error) {
-    console.error("Save job error:", error);
+  } catch (err) {
+    console.error("Save job error:", err);
 
     return error("Failed to save job", 500);
   }

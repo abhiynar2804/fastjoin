@@ -7,10 +7,7 @@ type Props = {
   initialApplied: boolean;
 };
 
-export default function ApplyJobButton({
-  jobId,
-  initialApplied,
-}: Props) {
+export default function ApplyJobButton({ jobId, initialApplied }: Props) {
   const [loading, setLoading] = useState(false);
   const [applied, setApplied] = useState(initialApplied);
 
@@ -34,8 +31,8 @@ export default function ApplyJobButton({
       } else {
         alert(data.error || "Failed to apply");
       }
-    } catch (error) {
-      console.error(error);
+    } catch (err) {
+      console.error(err);
       alert("Something went wrong");
     } finally {
       setLoading(false);

@@ -6,9 +6,9 @@ import { success, error } from "@/lib/api-response";
 
 export async function POST(req: Request) {
   try {
-    const { session, error } = await requireStudent();
+    const { session, error: authError } = await requireStudent();
 
-    if (error) return error;
+    if (authError) return authError;
 
     const formData = await req.formData();
     const file = formData.get("file");
@@ -58,10 +58,10 @@ export async function POST(req: Request) {
         message: "Resume uploaded successfully",
         resume,
       },
-      { status: 200 }
+      200
     );
-  } catch (error) {
-    console.error("Resume upload error:", error);
+  } catch (err) {
+    console.error("Resume upload error:", err);
 
     return error("Failed to upload resume", 500);
   }

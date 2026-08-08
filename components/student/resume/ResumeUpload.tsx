@@ -48,8 +48,8 @@ export default function ResumeUpload() {
       setFile(null);
 
       router.refresh();
-    } catch (error) {
-      console.error("Resume upload error:", error);
+    } catch (err) {
+      console.error("Resume upload error:", err);
       alert("Something went wrong");
     } finally {
       setUploading(false);
