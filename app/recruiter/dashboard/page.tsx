@@ -1,6 +1,7 @@
 import { auth } from "@/auth";
 import { redirect } from "next/navigation";
 import Link from "next/link";
+import LogoutButton from "@/components/layout/LogoutButton";
 
 import { prisma } from "@/lib/prisma";
 
@@ -101,7 +102,7 @@ export default async function RecruiterDashboard() {
 
   return (
     <>
-      <div className="mb-8 flex items-center justify-between">
+      <div className="mb-8 flex items-center justify-between gap-3">
         <div>
           <h1 className="text-3xl font-bold">
             Recruiter Dashboard
@@ -118,6 +119,8 @@ export default async function RecruiterDashboard() {
         >
           + Post Job
         </Link>
+
+        <LogoutButton />
       </div>
 
       <RecruiterStatsSection

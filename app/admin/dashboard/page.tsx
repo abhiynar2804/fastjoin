@@ -1,6 +1,7 @@
 import { auth } from "@/auth";
 import { redirect } from "next/navigation";
 import Link from "next/link";
+import LogoutButton from "@/components/layout/LogoutButton";
 
 import { prisma } from "@/lib/prisma";
 
@@ -83,6 +84,8 @@ export default async function AdminDashboard() {
         >
           Manage Users
         </Link>
+
+        <LogoutButton />
       </div>
 
       <AdminStatsSection
