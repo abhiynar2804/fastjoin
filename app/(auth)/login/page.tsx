@@ -52,7 +52,7 @@ export default function LoginPage() {
       <div>
         <h1 className="text-3xl font-bold tracking-tight">Welcome back</h1>
         <p className="text-sm text-zinc-500 dark:text-zinc-400 mt-1">
-          Enter your credentials to access your portal account
+          Enter your credentials to access your FastJoin account
         </p>
       </div>
 

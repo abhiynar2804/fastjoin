@@ -59,7 +59,7 @@ export default function SignupPage() {
       <div>
         <h1 className="text-3xl font-bold tracking-tight">Create an account</h1>
         <p className="text-sm text-zinc-500 dark:text-zinc-400 mt-1">
-          Join PlacementPortal to get started
+          Join FastJoin to get started
         </p>
       </div>
 

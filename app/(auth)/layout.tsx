@@ -1,6 +1,7 @@
 import { auth } from "@/auth";
 import { redirect } from "next/navigation";
 import Link from "next/link";
+import { ThemeToggle } from "@/components/ui/ThemeToggle";
 
 export default async function AuthLayout({
   children,
@@ -24,12 +25,18 @@ export default async function AuthLayout({
     <div className="min-h-screen flex w-full">
       {/* Left Column: Form Section */}
       <div className="w-full lg:w-1/2 flex flex-col justify-between p-8 md:p-12 lg:p-16">
-        {/* Top Header/Logo Placeholder */}
-        <div className="flex items-center gap-2">
-          <div className="h-8 w-8 rounded-lg flex items-center justify-center font-bold text-white btn-primary">
-            P
+        
+        {/* Top Header: Logo + Theme Toggle */}
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-2">
+            <div className="h-8 w-8 rounded-lg flex items-center justify-center font-bold text-white btn-primary">
+              F
+            </div>
+            <span className="font-bold text-xl tracking-tight">FastJoin</span>
           </div>
-          <span className="font-bold text-xl tracking-tight">PlacementPortal</span>
+
+          {/* Theme Toggle Switcher Button */}
+          <ThemeToggle />
         </div>
 
         {/* Center: Auth Form Container */}
@@ -39,7 +46,7 @@ export default async function AuthLayout({
 
         {/* Footer */}
         <div className="text-xs text-zinc-500 text-center lg:text-left">
-          © {new Date().getFullYear()} PlacementPortal. All rights reserved.
+          © {new Date().getFullYear()} FastJoin. All rights reserved.
         </div>
       </div>
 
