@@ -1,4 +1,5 @@
 import StatsCard from "./StatsCard";
+import { FileCheck, Bookmark, FileText } from "lucide-react";
 
 type StatsSectionProps = {
   appliedJobsCount: number;
@@ -12,21 +13,26 @@ export default function StatsSection({
   hasResume,
 }: StatsSectionProps) {
   return (
-    <div className="mb-8 grid grid-cols-1 gap-4 md:grid-cols-3">
+    <div className="mb-8 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
       <StatsCard
         title="Applications"
         value={appliedJobsCount}
+        subtitle="Jobs Applied"
+        icon={FileCheck}
       />
 
       <StatsCard
         title="Saved Jobs"
         value={savedJobsCount}
+        subtitle="Bookmarked Opportunities"
+        icon={Bookmark}
       />
 
       <StatsCard
-        title="Resume"
+        title="Resume Status"
         value={hasResume ? 1 : 0}
-        subtitle={hasResume ? "Uploaded" : "Not Uploaded"}
+        subtitle={hasResume ? "Resume Uploaded" : "No Resume Uploaded"}
+        icon={FileText}
       />
     </div>
   );
