@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { ArrowRight, Briefcase, Users } from "lucide-react";
 
 type RecruiterRecentJobsProps = {
   jobs: {
@@ -12,50 +13,73 @@ type RecruiterRecentJobsProps = {
   }[];
 };
 
-export default function RecruiterRecentJobs({
-  jobs,
-}: RecruiterRecentJobsProps) {
+export default function RecruiterRecentJobs({ jobs }: RecruiterRecentJobsProps) {
   return (
-    <div className="rounded-lg border p-6">
-      <h2 className="mb-4 text-xl font-semibold">
-        Recent Jobs
-      </h2>
-
-      {jobs.length === 0 ? (
-        <p className="text-gray-500">
-          No jobs posted yet.
-        </p>
-      ) : (
-        jobs.map((job) => (
-          <div
-            key={job.id}
-            className="mb-3 border-b pb-3 last:border-none"
-          >
-            <h3 className="font-medium">
-              {job.title}
-            </h3>
-
-            <p>{job.company}</p>
-
-            <div className="mt-1 flex items-center justify-between text-sm">
-              <span className="text-blue-600">
-                {job.status}
-              </span>
-
-              <span className="text-gray-500">
-                {job._count.applications} Applications
-              </span>
-            </div>
+    <div className="p-6 rounded-2xl border border-zinc-200 dark:border-zinc-800 bg-white/70 dark:bg-zinc-900/60 backdrop-blur-md shadow-sm flex flex-col justify-between">
+      <div>
+        <div className="flex items-center justify-between mb-4 pb-3 border-b border-zinc-100 dark:border-zinc-800">
+          <div className="flex items-center gap-2">
+            <Briefcase className="w-5 h-5 text-teal-600 dark:text-purple-400" />
+            <h2 className="text-lg font-bold text-zinc-900 dark:text-zinc-100">
+              Active Job Postings
+            </h2>
           </div>
-        ))
-      )}
+          <span className="text-xs font-semibold px-2 py-0.5 rounded-full bg-zinc-100 dark:bg-zinc-800 text-zinc-600 dark:text-zinc-400">
+            {jobs.length} Active
+          </span>
+        </div>
 
-      <Link
-        href="/recruiter/jobs"
-        className="mt-4 inline-block text-sm font-medium text-blue-600 hover:underline"
-      >
-        Manage Jobs →
-      </Link>
+        {jobs.length === 0 ? (
+          <div className="text-center py-8 text-zinc-500 dark:text-zinc-400 text-sm">
+            You haven't posted any jobs yet.
+          </div>
+        ) : (
+          <div className="space-y-3">
+            {jobs.map((job) => (
+              <div
+                key={job.id}
+                className="p-3.5 rounded-xl bg-zinc-50/80 dark:bg-zinc-800/40 border border-zinc-200/60 dark:border-zinc-800/60 flex items-center justify-between gap-3 hover:border-zinc-300 dark:hover:border-zinc-700 transition-colors"
+              >
+                <div className="overflow-hidden">
+                  <h3 className="font-semibold text-sm text-zinc-900 dark:text-zinc-100 truncate">
+                    {job.title}
+                  </h3>
+                  <p className="text-xs text-zinc-500 dark:text-zinc-400 truncate">
+                    {job.company}
+                  </p>
+                </div>
+
+                <div className="flex items-center gap-2 shrink-0">
+                  <span
+                    className={`text-[11px] font-bold px-2 py-0.5 rounded-full border ${
+                      job.status === "OPEN"
+                        ? "bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border-emerald-500/20"
+                        : "bg-zinc-500/10 text-zinc-600 dark:text-zinc-400 border-zinc-500/20"
+                    }`}
+                  >
+                    {job.status}
+                  </span>
+
+                  <span className="flex items-center gap-1 text-xs font-semibold text-zinc-600 dark:text-zinc-400 bg-zinc-200/60 dark:bg-zinc-800 px-2.5 py-1 rounded-lg">
+                    <Users className="w-3.5 h-3.5" />
+                    <span>{job._count.applications}</span>
+                  </span>
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
+      </div>
+
+      <div className="mt-6 pt-3 border-t border-zinc-100 dark:border-zinc-800">
+        <Link
+          href="/recruiter/jobs"
+          className="inline-flex items-center gap-1.5 text-xs font-semibold brand-text hover:underline"
+        >
+          <span>Manage All Job Listings</span>
+          <ArrowRight className="w-3.5 h-3.5" />
+        </Link>
+      </div>
     </div>
   );
 }
