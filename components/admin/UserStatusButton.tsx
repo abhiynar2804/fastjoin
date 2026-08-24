@@ -1,22 +1,23 @@
 "use client";
 
+import { useState } from "react";
 import { useRouter } from "next/navigation";
+import { CheckCircle2, UserX, UserCheck } from "lucide-react";
 
 type Props = {
   userId: string;
   isActive: boolean;
 };
 
-export default function UserStatusButton({
-  userId,
-  isActive,
-}: Props) {
+export default function UserStatusButton({ userId, isActive }: Props) {
   const router = useRouter();
+  const [loading, setLoading] = useState(false);
 
   async function toggleStatus() {
-    const res = await fetch(
-      `/api/admin/users/${userId}/status`,
-      {
+    setLoading(true);
+
+    try {
+      const res = await fetch(`/api/admin/users/${userId}/status`, {
         method: "PATCH",
         headers: {
           "Content-Type": "application/json",
@@ -24,27 +25,43 @@ export default function UserStatusButton({
         body: JSON.stringify({
           isActive: !isActive,
         }),
+      });
+
+      if (!res.ok) {
+        alert("Failed to update status.");
+        return;
       }
-    );
 
-    if (!res.ok) {
-      alert("Failed to update status.");
-      return;
+      router.refresh();
+    } catch (err) {
+      console.error(err);
+      alert("Something went wrong");
+    } finally {
+      setLoading(false);
     }
-
-    router.refresh();
   }
 
   return (
     <button
       onClick={toggleStatus}
-      className={`rounded-lg px-4 py-2 text-white ${
+      disabled={loading}
+      className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-semibold transition-all duration-200 cursor-pointer disabled:opacity-50 ${
         isActive
-          ? "bg-red-600 hover:bg-red-700"
-          : "bg-green-600 hover:bg-green-700"
+          ? "bg-red-500/10 text-red-600 dark:text-red-400 hover:bg-red-500/20 border border-red-500/20"
+          : "bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 hover:bg-emerald-500/20 border border-emerald-500/20"
       }`}
     >
-      {isActive ? "Deactivate" : "Activate"}
+      {isActive ? (
+        <>
+          <UserX className="w-3.5 h-3.5" />
+          <span>Deactivate</span>
+        </>
+      ) : (
+        <>
+          <UserCheck className="w-3.5 h-3.5" />
+          <span>Activate</span>
+        </>
+      )}
     </button>
   );
 }

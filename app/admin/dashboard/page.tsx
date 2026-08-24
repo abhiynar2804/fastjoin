@@ -1,9 +1,8 @@
 import { auth } from "@/auth";
 import { redirect } from "next/navigation";
 import Link from "next/link";
-import LogoutButton from "@/components/layout/LogoutButton";
-
 import { prisma } from "@/lib/prisma";
+import { Users, ShieldCheck } from "lucide-react";
 
 import AdminStatsSection from "@/components/admin/AdminStatsSection";
 import RecentUsers from "@/components/admin/RecentUsers";
@@ -66,28 +65,35 @@ export default async function AdminDashboard() {
   ]);
 
   return (
-    <>
-      <div className="mb-8 flex items-center justify-between">
+    <div className="space-y-8">
+      {/* Top Banner Card */}
+      <div className="p-6 md:p-8 rounded-2xl border border-zinc-200 dark:border-zinc-800 bg-white/70 dark:bg-zinc-900/60 backdrop-blur-md shadow-sm flex flex-col md:flex-row md:items-center justify-between gap-6">
         <div>
-          <h1 className="text-3xl font-bold">
-            Admin Dashboard
+          <div className="flex items-center gap-2 mb-1.5">
+            <span className="inline-block px-2.5 py-0.5 text-[11px] font-bold rounded-full btn-primary uppercase tracking-wider">
+              Super Admin Console
+            </span>
+          </div>
+          <h1 className="text-2xl md:text-3xl font-extrabold tracking-tight text-zinc-900 dark:text-zinc-100">
+            Welcome back, {session.user.name || "Administrator"}! 🛡️
           </h1>
-
-          <p className="text-gray-500">
-            Platform Overview
+          <p className="mt-1 text-sm text-zinc-500 dark:text-zinc-400">
+            Monitor platform health, manage registered users, review recruiter postings, and oversee placement operations.
           </p>
         </div>
 
-        <Link
-          href="/admin/users"
-          className="rounded-lg bg-blue-600 px-5 py-3 text-white"
-        >
-          Manage Users
-        </Link>
-
-        <LogoutButton />
+        <div className="shrink-0 flex items-center gap-3">
+          <Link
+            href="/admin/users"
+            className="inline-flex items-center gap-2 px-5 py-3 rounded-xl font-medium text-sm text-white btn-primary shadow-md shadow-teal-500/20 dark:shadow-purple-500/20"
+          >
+            <Users className="w-4 h-4" />
+            <span>Manage Users</span>
+          </Link>
+        </div>
       </div>
 
+      {/* Admin Stats Section */}
       <AdminStatsSection
         totalStudents={totalStudents}
         totalRecruiters={totalRecruiters}
@@ -96,11 +102,11 @@ export default async function AdminDashboard() {
         totalResumes={totalResumes}
       />
 
-      <div className="mt-8 grid grid-cols-1 gap-6 lg:grid-cols-2">
+      {/* Overview Grid */}
+      <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
         <RecentUsers users={recentUsers} />
-
         <RecentJobs jobs={recentJobs} />
       </div>
-    </>
+    </div>
   );
 }
