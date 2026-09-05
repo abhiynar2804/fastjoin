@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import { FileUp, Upload } from "lucide-react";
 
 export default function ResumeUpload() {
   const router = useRouter();
@@ -57,21 +58,39 @@ export default function ResumeUpload() {
   };
 
   return (
-    <div className="rounded-lg border p-6">
-      <input
-        type="file"
-        accept="application/pdf"
-        onChange={(e) => {
-          setFile(e.target.files?.[0] || null);
-        }}
-      />
-
+    <div className="rounded-2xl border border-zinc-200 bg-white/70 p-6 shadow-sm backdrop-blur-md dark:border-zinc-800 dark:bg-zinc-900/60">
+      <div className="flex items-start gap-3">
+        <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-teal-500/10 text-teal-600 dark:bg-purple-500/10 dark:text-purple-400">
+          <FileUp className="h-5 w-5" />
+        </div>
+        <div>
+          <h2 className="font-bold text-zinc-900 dark:text-zinc-100">
+            Upload a new resume
+          </h2>
+          <p className="mt-1 text-sm text-zinc-500 dark:text-zinc-400">
+            PDF only, up to 5 MB.
+          </p>
+        </div>
+      </div>
+      <label className="mt-5 flex cursor-pointer items-center justify-between gap-3 rounded-xl border border-dashed border-zinc-300 bg-zinc-50 px-4 py-3 text-sm text-zinc-500 transition-colors hover:border-teal-400 dark:border-zinc-700 dark:bg-zinc-950/50 dark:text-zinc-400 dark:hover:border-purple-500">
+        <span className="truncate">{file?.name || "Choose a PDF file"}</span>
+        <span className="shrink-0 rounded-lg bg-zinc-200 px-3 py-1.5 text-xs font-bold text-zinc-700 dark:bg-zinc-800 dark:text-zinc-200">
+          Browse
+        </span>
+        <input
+          type="file"
+          accept="application/pdf"
+          className="sr-only"
+          onChange={(e) => setFile(e.target.files?.[0] || null)}
+        />
+      </label>
       <button
         onClick={handleUpload}
         disabled={uploading}
-        className="mt-4 block rounded bg-blue-600 px-4 py-2 text-white disabled:cursor-not-allowed disabled:opacity-50"
+        className="btn-primary mt-4 inline-flex items-center gap-2 rounded-xl px-4 py-2.5 text-sm font-bold shadow-sm disabled:cursor-not-allowed disabled:opacity-50"
       >
-        {uploading ? "Uploading..." : "Upload Resume"}
+        <Upload className="h-4 w-4" />
+        {uploading ? "Uploading..." : "Upload resume"}
       </button>
     </div>
   );

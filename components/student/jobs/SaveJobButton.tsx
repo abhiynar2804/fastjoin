@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { Bookmark, Check } from "lucide-react";
 
 type Props = {
   jobId: string;
@@ -43,9 +44,10 @@ export default function SaveJobButton({ jobId, initialSaved }: Props) {
     <button
       onClick={handleSave}
       disabled={loading || saved}
-      className="rounded-lg border px-6 py-3 disabled:cursor-not-allowed disabled:opacity-50"
+      className="inline-flex items-center gap-2 rounded-xl border border-zinc-200 bg-white px-5 py-2.5 text-sm font-bold text-zinc-700 shadow-sm transition-colors hover:border-teal-300 hover:text-teal-700 disabled:cursor-not-allowed disabled:opacity-60 dark:border-zinc-700 dark:bg-zinc-900 dark:text-zinc-300 dark:hover:border-purple-500/50 dark:hover:text-purple-300"
     >
-      {loading ? "Saving..." : saved ? "Saved ✓" : "Save Job"}
+      {saved ? <Check className="h-4 w-4" /> : <Bookmark className="h-4 w-4" />}
+      {loading ? "Saving..." : saved ? "Saved" : "Save job"}
     </button>
   );
 }
