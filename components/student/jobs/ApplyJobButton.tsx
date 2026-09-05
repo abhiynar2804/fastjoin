@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { Check, Send } from "lucide-react";
 
 type Props = {
   jobId: string;
@@ -43,9 +44,10 @@ export default function ApplyJobButton({ jobId, initialApplied }: Props) {
     <button
       onClick={handleApply}
       disabled={loading || applied}
-      className="rounded-lg bg-blue-600 px-6 py-3 text-white disabled:cursor-not-allowed disabled:opacity-50"
+      className="btn-primary inline-flex items-center gap-2 rounded-xl px-5 py-2.5 text-sm font-bold shadow-sm disabled:cursor-not-allowed disabled:opacity-60"
     >
-      {loading ? "Applying..." : applied ? "Applied ✓" : "Apply Now"}
+      {applied ? <Check className="h-4 w-4" /> : <Send className="h-4 w-4" />}
+      {loading ? "Applying..." : applied ? "Applied" : "Apply now"}
     </button>
   );
 }

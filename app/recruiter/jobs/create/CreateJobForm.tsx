@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { PlusCircle, Building2, MapPin, DollarSign, Calendar, FileText, CheckCircle } from "lucide-react";
+import { PlusCircle, Building2, MapPin, DollarSign, Calendar, FileText, AlertCircle } from "lucide-react";
 
 export default function CreateJobForm() {
   const router = useRouter();
@@ -49,7 +49,28 @@ export default function CreateJobForm() {
         router.push("/recruiter/jobs");
       } else {
         const data = await res.json();
-        setError(data.error || "Failed to post job listing.");
+        
+        // Handle error responses safely (strings vs Zod error objects)
+        if (typeof data.error === "string") {
+          setError(data.error);
+        } else if (data.error && typeof data.error === "object") {
+          if (data.error.fieldErrors && Object.keys(data.error.fieldErrors).length > 0) {
+            const fieldMsgs = Object.entries(data.error.fieldErrors)
+              .map(([field, errs]: [string, any]) => {
+                const fieldName = field.charAt(0).toUpperCase() + field.slice(1);
+                const msg = Array.isArray(errs) ? errs.join(", ") : String(errs);
+                return `${fieldName}: ${msg}`;
+              })
+              .join(" | ");
+            setError(`Validation Error: ${fieldMsgs}`);
+          } else if (Array.isArray(data.error.formErrors) && data.error.formErrors.length > 0) {
+            setError(data.error.formErrors.join(" | "));
+          } else {
+            setError("Validation failed. Please verify your inputs.");
+          }
+        } else {
+          setError(data.message || "Failed to post job listing.");
+        }
       }
     } catch (err) {
       setError("An unexpected error occurred. Please try again.");
@@ -61,8 +82,9 @@ export default function CreateJobForm() {
   return (
     <form onSubmit={handleSubmit} className="max-w-4xl space-y-6">
       {error && (
-        <div className="p-4 text-sm rounded-xl bg-red-500/10 border border-red-500/20 text-red-600 dark:text-red-400">
-          {error}
+        <div className="p-4 rounded-xl text-sm flex items-start gap-3 bg-red-500/10 border border-red-500/20 text-red-600 dark:text-red-400">
+          <AlertCircle className="w-5 h-5 shrink-0 mt-0.5" />
+          <div className="font-medium leading-relaxed">{error}</div>
         </div>
       )}
 
@@ -79,6 +101,8 @@ export default function CreateJobForm() {
               name="title"
               type="text"
               required
+              minLength={3}
+              maxLength={100}
               placeholder="Software Engineer Intern"
               value={form.title}
               onChange={handleChange}
@@ -92,6 +116,8 @@ export default function CreateJobForm() {
               name="company"
               type="text"
               required
+              minLength={2}
+              maxLength={100}
               placeholder="Acme Corp"
               value={form.company}
               onChange={handleChange}
@@ -105,6 +131,8 @@ export default function CreateJobForm() {
               name="location"
               type="text"
               required
+              minLength={2}
+              maxLength={100}
               placeholder="Bangalore, India"
               value={form.location}
               onChange={handleChange}
@@ -113,16 +141,20 @@ export default function CreateJobForm() {
           </div>
 
           <div>
-            <label className="block text-sm font-medium mb-1.5">Compensation / CTC</label>
+            <label className="block text-sm font-medium mb-1.5">Numeric Salary Amount</label>
             <input
               name="salary"
-              type="text"
+              type="number"
+              min="0"
               required
-              placeholder="₹12 LPA or ₹40,000/mo"
+              placeholder="600000"
               value={form.salary}
               onChange={handleChange}
               className="w-full px-3.5 py-2.5 rounded-lg border border-zinc-300 dark:border-zinc-800 bg-transparent text-sm input-focus"
             />
+            <p className="text-[11px] text-zinc-500 dark:text-zinc-400 mt-1">
+              Enter numbers only (e.g. 600000 for ₹6 LPA or 50000 for monthly stipend).
+            </p>
           </div>
         </div>
       </div>
@@ -183,12 +215,13 @@ export default function CreateJobForm() {
 
         <div className="space-y-4">
           <div>
-            <label className="block text-sm font-medium mb-1.5">Job Description</label>
+            <label className="block text-sm font-medium mb-1.5">Job Description (min 20 characters)</label>
             <textarea
               name="description"
               required
+              minLength={20}
               rows={4}
-              placeholder="Provide key responsibilities and role details..."
+              placeholder="Provide key responsibilities and role details (minimum 20 characters)..."
               value={form.description}
               onChange={handleChange}
               className="w-full px-3.5 py-2.5 rounded-lg border border-zinc-300 dark:border-zinc-800 bg-transparent text-sm input-focus"
@@ -196,12 +229,13 @@ export default function CreateJobForm() {
           </div>
 
           <div>
-            <label className="block text-sm font-medium mb-1.5">Role Requirements & Qualifications</label>
+            <label className="block text-sm font-medium mb-1.5">Role Requirements & Qualifications (min 20 characters)</label>
             <textarea
               name="requirements"
               required
+              minLength={20}
               rows={4}
-              placeholder="List required technical skills, degree, CGPA criteria..."
+              placeholder="List required technical skills, degree, CGPA criteria (minimum 20 characters)..."
               value={form.requirements}
               onChange={handleChange}
               className="w-full px-3.5 py-2.5 rounded-lg border border-zinc-300 dark:border-zinc-800 bg-transparent text-sm input-focus"
